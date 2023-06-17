@@ -1,23 +1,18 @@
 package com.nonylog.api.request;
 
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Setter
+@Getter
+@ToString
 public class CreatePostRequest {
 
-    public String title;
+    @NotBlank(message = "타이틀을 입력해주세요.") // null도 함께 체크
+    private String title;
+
+    @NotBlank(message = "콘텐츠를 입력해주세요.")
     private String content;
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    @Override
-    public String toString() {
-        return "CreatePostRequest{" +
-                "title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                '}';
-    }
 }
