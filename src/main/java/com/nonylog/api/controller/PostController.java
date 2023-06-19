@@ -1,7 +1,7 @@
 package com.nonylog.api.controller;
 
-import com.nonylog.api.domain.Post;
 import com.nonylog.api.request.CreatePostRequest;
+import com.nonylog.api.response.PostResponse;
 import com.nonylog.api.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +21,8 @@ public class PostController {
     }
 
     @GetMapping("/posts/{postId}")
-    public Post get(@PathVariable(name = "postId") Long id) {
-        Post post = postService.get(id);
-        return post;
+    public PostResponse get(@PathVariable(name = "postId") Long id) {
+        PostResponse response = postService.get(id);
+        return response;
     }
 }
