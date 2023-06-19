@@ -1,6 +1,7 @@
 package com.nonylog.api.request;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,4 +16,10 @@ public class CreatePostRequest {
 
     @NotBlank(message = "콘텐츠를 입력해주세요.")
     private String content;
+
+    @Builder
+    public CreatePostRequest(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }
