@@ -1,6 +1,7 @@
 package com.nonylog.api.controller;
 
 import com.nonylog.api.request.CreatePostRequest;
+import com.nonylog.api.request.PostEdit;
 import com.nonylog.api.request.PostSearch;
 import com.nonylog.api.response.PostResponse;
 import com.nonylog.api.service.PostService;
@@ -31,5 +32,10 @@ public class PostController {
     @GetMapping("/posts")
     public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
         return postService.getList(postSearch);
+    }
+
+    @PatchMapping("/posts/{postId}")
+    public void edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request) {
+        postService.edit(postId, request);
     }
 }

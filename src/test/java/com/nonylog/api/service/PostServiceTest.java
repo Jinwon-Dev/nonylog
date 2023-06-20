@@ -3,6 +3,7 @@ package com.nonylog.api.service;
 import com.nonylog.api.domain.Post;
 import com.nonylog.api.repository.PostRepository;
 import com.nonylog.api.request.CreatePostRequest;
+import com.nonylog.api.request.PostEdit;
 import com.nonylog.api.request.PostSearch;
 import com.nonylog.api.response.PostResponse;
 import org.junit.jupiter.api.Assertions;
@@ -73,7 +74,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("글 1페이지 조회")
+    @DisplayName("글 여러개 조회")
     void test3() {
         // given
         List<Post> requestPosts = IntStream.range(0, 20)
@@ -94,5 +95,55 @@ class PostServiceTest {
         // then
         assertEquals(10L, posts.size());
         assertEquals("지노니 제목 19", posts.get(0).getTitle());
+    }
+
+    @Test
+    @DisplayName("글 제목 수정")
+    void test4() {
+        // given
+        Post post = Post.builder()
+                .title("지노니")
+                .content("시그니엘")
+                .build();
+
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("진원맨")
+                .content("시그니엘")
+                .build();
+
+        // when
+        postService.edit(post.getId(), postEdit);
+
+        // then
+        Post changedPost = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + post.getId()));
+        assertEquals("진원맨", changedPost.getTitle());
+    }
+
+    @Test
+    @DisplayName("글 내용 수정")
+    void test5() {
+        // given
+        Post post = Post.builder()
+                .title("지노니")
+                .content("시그니엘")
+                .build();
+
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("진원맨")
+                .content("스마트시티")
+                .build();
+
+        // when
+        postService.edit(post.getId(), postEdit);
+
+        // then
+        Post changedPost = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + post.getId()));
+        assertEquals("스마트시티", changedPost.getContent());
     }
 }
