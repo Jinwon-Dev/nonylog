@@ -134,7 +134,7 @@ class PostServiceTest {
         postRepository.save(post);
 
         PostEdit postEdit = PostEdit.builder()
-                .title("진원맨")
+                .title(null)
                 .content("스마트시티")
                 .build();
 
@@ -144,6 +144,7 @@ class PostServiceTest {
         // then
         Post changedPost = postRepository.findById(post.getId())
                 .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + post.getId()));
+        assertEquals("지노니", changedPost.getTitle());
         assertEquals("스마트시티", changedPost.getContent());
     }
 }
