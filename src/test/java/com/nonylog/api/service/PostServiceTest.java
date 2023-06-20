@@ -147,4 +147,22 @@ class PostServiceTest {
         assertEquals("지노니", changedPost.getTitle());
         assertEquals("스마트시티", changedPost.getContent());
     }
+
+    @Test
+    @DisplayName("게시글 삭제")
+    void test6() throws Exception {
+
+        // given
+        Post post = Post.builder()
+                .title("지노니")
+                .content("시그니엘")
+                .build();
+        postRepository.save(post);
+
+        // when
+        postService.delete(post.getId());
+
+        // then
+        assertEquals(0, postRepository.count());
+    }
 }
