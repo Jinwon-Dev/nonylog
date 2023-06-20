@@ -3,10 +3,10 @@ package com.nonylog.api.service;
 import com.nonylog.api.domain.Post;
 import com.nonylog.api.repository.PostRepository;
 import com.nonylog.api.request.CreatePostRequest;
+import com.nonylog.api.request.PostSearch;
 import com.nonylog.api.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,8 +40,8 @@ public class PostService {
                 .build();
     }
 
-    public List<PostResponse> getList(Pageable pageable) {
-        return postRepository.findAll(pageable).stream()
+    public List<PostResponse> getList(PostSearch postSearch) {
+        return postRepository.getList(postSearch).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
     }
