@@ -17,6 +17,8 @@ HELP.md
 .idea/**/aws.xml
 *.yml
 
+nodeenv-16
+
 # Generated files
 .idea/**/contentModel.xml
 
