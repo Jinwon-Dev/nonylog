@@ -1,20 +1,21 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {defineProps, ref} from "vue";
 
-import axios from 'axios';
-import router from "@/router";
+import axios from "axios";
 import {useRouter} from "vue-router";
+
+const router = useRouter();
 
 const post = ref({
     id: 0,
     title: "",
-    content: ""
-})
+    content: "",
+});
 
 const props = defineProps({
     postId: {
         type: [Number, String],
-        required: true
+        require: true,
     },
 });
 
@@ -24,9 +25,9 @@ axios.get(`/api/posts/${props.postId}`).then((response) => {
 
 const edit = () => {
     axios.patch(`/api/posts/${props.postId}`, post.value).then(() => {
-        router.replace({name: "home"})
+        router.replace({name: "home"});
     });
-}
+};
 </script>
 
 <template>
@@ -35,14 +36,12 @@ const edit = () => {
     </div>
 
     <div class="mt-2">
-        <el-input v-model="post.content" type="textarea" rows="15"></el-input>
+        <el-input v-model="post.content" type="textarea" rows="15"/>
     </div>
 
-    <div class="mt-2">
-        <el-button type="warning" @click="edit">글 수정완료</el-button>
+    <div class="mt-2 d-flex justify-content-end">
+        <el-button type="warning" @click="edit()">수정완료</el-button>
     </div>
 </template>
 
-<style>
-
-</style>
+<style></style>
