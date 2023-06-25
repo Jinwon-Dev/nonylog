@@ -1,4 +1,4 @@
-package com.nonylog.api.config;
+package com.nonylog.global.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
