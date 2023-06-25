@@ -1,9 +1,8 @@
 package com.nonylog.api.controller;
 
-import com.nonylog.api.domain.User;
-import com.nonylog.api.repository.UserRepository;
 import com.nonylog.api.request.Login;
-import com.nonylog.global.exception.InvalidSignInInformation;
+import com.nonylog.api.response.SessionResponse;
+import com.nonylog.api.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,15 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserRepository userRepository;
+    private final AuthService authService;
 
     @PostMapping("/auth/login")
-    public User login(@RequestBody Login login) {
-        log.info(">> login={}", login);
+    public SessionResponse login(@RequestBody Login login) {
 
-        User user = userRepository.findByEmailAndPassword(login.getEmail(), login.getPassword())
-                .orElseThrow(InvalidSignInInformation::new);
-
-        return user;
+        String accessToken = authService.signIn(login);
+        return new SessionResponse(accessToken);
     }
 }
