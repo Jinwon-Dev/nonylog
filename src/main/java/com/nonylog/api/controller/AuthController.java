@@ -1,6 +1,7 @@
 package com.nonylog.api.controller;
 
 import com.nonylog.api.request.Login;
+import com.nonylog.api.request.SignUp;
 import com.nonylog.api.response.SessionResponse;
 import com.nonylog.api.service.AuthService;
 import com.nonylog.global.config.AppConfig;
@@ -37,5 +38,10 @@ public class AuthController {
                 .compact();
 
         return new SessionResponse(jws);
+    }
+
+    @PostMapping("/auth/signup")
+    public void signup(@RequestBody SignUp signup) {
+        authService.signUp(signup);
     }
 }

@@ -5,6 +5,7 @@ import com.nonylog.api.domain.Session;
 import com.nonylog.api.domain.User;
 import com.nonylog.api.repository.UserRepository;
 import com.nonylog.api.request.Login;
+import com.nonylog.api.request.SignUp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -157,6 +158,24 @@ class AuthControllerTest {
                         .header("Authorization", session.getAccessToken() + "-")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원가입")
+    void test6() throws Exception {
+        // given
+        SignUp signUp = SignUp.builder()
+                .password("1234")
+                .email("jinony99@gmail.com")
+                .name("jinony")
+                .build();
+
+        // expected
+        mockMvc.perform(post("/auth/signup")
+                        .content(objectMapper.writeValueAsString(signUp))
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 }
