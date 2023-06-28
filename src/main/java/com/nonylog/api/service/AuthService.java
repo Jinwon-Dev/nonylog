@@ -1,14 +1,13 @@
 package com.nonylog.api.service;
 
-import com.nonylog.api.domain.Session;
 import com.nonylog.api.domain.User;
 import com.nonylog.api.repository.UserRepository;
 import com.nonylog.api.request.Login;
 import com.nonylog.api.request.SignUp;
+import com.nonylog.global.crypto.PasswordEncoder;
 import com.nonylog.global.exception.AlreadyExistsEmailException;
 import com.nonylog.global.exception.InvalidSignInInformation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,9 +22,14 @@ public class AuthService {
     @Transactional
     public Long signIn(Login login) {
 
-        User user = userRepository.findByEmailAndPassword(login.getEmail(), login.getPassword())
+        User user = userRepository.findByEmail(login.getEmail())
                 .orElseThrow(InvalidSignInInformation::new);
-        Session session = user.addSession();
+
+        PasswordEncoder encoder = new PasswordEncoder();
+        var matches = encoder.matches(login.getPassword(), user.getPassword());
+        if (!matches) {
+            throw new InvalidSignInInformation();
+        }
 
         return user.getId();
     }
@@ -37,8 +41,8 @@ public class AuthService {
             throw new AlreadyExistsEmailException();
         }
 
-        SCryptPasswordEncoder encoder = new SCryptPasswordEncoder(16, 8, 1, 32, 64);
-        String encryptedPassword = encoder.encode(signup.getPassword());
+        PasswordEncoder encoder = new PasswordEncoder();
+        String encryptedPassword = encoder.encrypt(signup.getPassword());
 
         var user = User.builder()
                 .name(signup.getName())
