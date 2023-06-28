@@ -1,11 +1,12 @@
 package com.nonylog.global.config;
 
-import com.nonylog.api.domain.Session;
 import com.nonylog.api.repository.SessionRepository;
 import com.nonylog.global.config.data.UserSession;
 import com.nonylog.global.exception.Unauthorized;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -19,6 +20,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class AuthResolver implements HandlerMethodArgumentResolver {
 
     private final SessionRepository sessionRepository;
+    private final AppConfig appConfig;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -28,24 +30,20 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 
-        HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-        if (servletRequest == null) {
-            log.error("servletRequest null");
+        String jws = webRequest.getHeader("Authorization");
+        if (jws == null || jws.equals("")) {
             throw new Unauthorized();
         }
 
-        Cookie[] cookies = servletRequest.getCookies();
-
-        if (cookies.length == 0) {
-            log.error("쿠키가 존재하지 않습니다.");
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(appConfig.getJwtKey())
+                    .build()
+                    .parseClaimsJws(jws);
+            String userId = claims.getBody().getSubject();
+            return new UserSession(Long.parseLong(userId));
+        } catch (JwtException e) {
             throw new Unauthorized();
         }
-
-        String accessToken = cookies[0].getValue();
-
-        Session session = sessionRepository.findByAccessToken(accessToken)
-                .orElseThrow(Unauthorized::new);
-
-        return new UserSession(session.getUser().getId());
     }
 }
