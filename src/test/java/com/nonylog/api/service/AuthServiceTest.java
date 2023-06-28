@@ -4,7 +4,7 @@ import com.nonylog.api.domain.User;
 import com.nonylog.api.repository.UserRepository;
 import com.nonylog.api.request.Login;
 import com.nonylog.api.request.SignUp;
-import com.nonylog.global.crypto.PasswordEncoder;
+import com.nonylog.global.crypto.ScryptPasswordEncoder;
 import com.nonylog.global.exception.AlreadyExistsEmailException;
 import com.nonylog.global.exception.InvalidSignInInformation;
 import org.junit.jupiter.api.AfterEach;
@@ -12,9 +12,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ActiveProfiles("test")
 @SpringBootTest
 class AuthServiceTest {
 
@@ -49,7 +51,7 @@ class AuthServiceTest {
         User user = userRepository.findAll().iterator().next();
         assertEquals("jinony99@gmail.com", user.getEmail());
         assertNotNull(user.getPassword());
-        assertNotEquals("1234", user.getPassword());
+        assertEquals("1234", user.getPassword());
         assertEquals("jinony", user.getName());
     }
 
@@ -80,7 +82,7 @@ class AuthServiceTest {
     void test3() {
 
         // given
-        PasswordEncoder encoder = new PasswordEncoder();
+        ScryptPasswordEncoder encoder = new ScryptPasswordEncoder();
         String encryptedPassword = encoder.encrypt("1234");
 
         User user = User.builder()

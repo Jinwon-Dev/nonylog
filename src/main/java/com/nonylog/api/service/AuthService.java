@@ -18,6 +18,7 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Long signIn(Login login) {
@@ -25,8 +26,7 @@ public class AuthService {
         User user = userRepository.findByEmail(login.getEmail())
                 .orElseThrow(InvalidSignInInformation::new);
 
-        PasswordEncoder encoder = new PasswordEncoder();
-        var matches = encoder.matches(login.getPassword(), user.getPassword());
+        var matches = passwordEncoder.matches(login.getPassword(), user.getPassword());
         if (!matches) {
             throw new InvalidSignInInformation();
         }
@@ -41,8 +41,7 @@ public class AuthService {
             throw new AlreadyExistsEmailException();
         }
 
-        PasswordEncoder encoder = new PasswordEncoder();
-        String encryptedPassword = encoder.encrypt(signup.getPassword());
+        String encryptedPassword = passwordEncoder.encrypt(signup.getPassword());
 
         var user = User.builder()
                 .name(signup.getName())
