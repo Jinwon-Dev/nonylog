@@ -3,9 +3,9 @@ package com.nonylog.api.service;
 import com.nonylog.api.domain.User;
 import com.nonylog.api.repository.UserRepository;
 import com.nonylog.api.request.SignUp;
-import com.nonylog.global.crypto.PasswordEncoder;
 import com.nonylog.global.exception.AlreadyExistsEmailException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,6 +15,7 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public void signUp(SignUp signup) {
 
@@ -23,8 +24,7 @@ public class AuthService {
             throw new AlreadyExistsEmailException();
         }
 
-        PasswordEncoder encoder = new PasswordEncoder();
-        String encryptedPassword = encoder.encrypt(signup.getPassword());
+        String encryptedPassword = passwordEncoder.encode(signup.getPassword());
 
         var user = User.builder()
                 .name(signup.getName())
