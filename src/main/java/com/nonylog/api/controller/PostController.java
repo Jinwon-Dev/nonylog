@@ -5,7 +5,6 @@ import com.nonylog.api.request.PostEdit;
 import com.nonylog.api.request.PostSearch;
 import com.nonylog.api.response.PostResponse;
 import com.nonylog.api.service.PostService;
-import com.nonylog.global.config.data.UserSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,17 +18,6 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-
-    @GetMapping("/foo")
-    public Long foo(UserSession userSession) {
-        log.info(">> {}", userSession.id);
-        return userSession.id;
-    }
-
-    @GetMapping("/bar")
-    public String bar(UserSession userSession) {
-        return "인증이 필요한 페이지";
-    }
 
     @PostMapping("/posts")
     public void post(@RequestBody @Valid final CreatePostRequest request) {
