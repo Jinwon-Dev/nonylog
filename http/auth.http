@@ -3,9 +3,7 @@
 POST http://localhost:8080/auth/login
 Content-Type: application/x-www-form-urlencoded
 
-username=jinony&password=1234
+username=jinony&password=1234&remember=1
 
-### 인증 페이지 요청
-GET http://localhost:8080/foo
-Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjg3OTY2NTIxfQ.RfF8l4tqmH6iZkRJvskxMV6cOl5V8xWfAiyx2pHo1yo
+### 메인 페이지
+GET http://localhost:8080
