@@ -1,7 +1,12 @@
 package com.nonylog.global.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nonylog.api.domain.User;
 import com.nonylog.api.repository.UserRepository;
+import com.nonylog.global.config.handler.Http401Handler;
+import com.nonylog.global.config.handler.Http403Handler;
+import com.nonylog.global.config.handler.LoginFailHandler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,13 +18,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
 @Configuration
 @EnableWebSecurity(debug = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final ObjectMapper objectMapper;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -37,8 +44,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                     .requestMatchers("/auth/login").permitAll()
                     .requestMatchers("/auth/signup").permitAll()
-                    .requestMatchers("/admin")
-                        .access(new WebExpressionAuthorizationManager("hasRole('ADMIN') AND hasAuthority('WRITE')"))
+                    .requestMatchers("/user").hasRole("USER")
+                    .requestMatchers("/admin").hasRole("ADMIN")
                     .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -47,7 +54,12 @@ public class SecurityConfig {
                     .usernameParameter("username")
                     .passwordParameter("password")
                     .defaultSuccessUrl("/")
+                    .failureHandler(new LoginFailHandler(objectMapper))
                 .and()
+                .exceptionHandling(e -> {
+                    e.accessDeniedHandler(new Http403Handler(objectMapper));
+                    e.authenticationEntryPoint(new Http401Handler(objectMapper));
+                })
                 .rememberMe(rm -> rm.rememberMeParameter("remember")
                         .alwaysRemember(false)
                         .tokenValiditySeconds(2592000))
